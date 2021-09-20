@@ -42,7 +42,7 @@ int main( void )
 	us_sensor=sensor_search( LEGO_EV3_US );
 	us_set_mode_us_dist_cm(us_sensor);
 	int distance=sensor_get_value(0, us_sensor,0);
-	printf("%d", distance);
+	printf("%d\n", distance);
 	
 
 	tacho_set_speed_sp( MOTOR_BOTH, max_hastighet * 0.1 );  // Sätter hastigheten på båda motorerna till 50% av maxhastigheten
@@ -54,11 +54,22 @@ int main( void )
 	tacho_set_position_sp (MOTOR_LEFT, 50);
 	tacho_set_position_sp (MOTOR_RIGHT, -50);
 	tacho_run_to_rel_pos (MOTOR_BOTH);
-
-	//tacho_set_position_sp (MOTOR_BOTH, 720);
-	//tacho_run_to_rel_pos (MOTOR_BOTH);
-	while(!sensor_get_value(0, touchSensor, 0)); //Så länge touch-sensorn inte är intryckt kommer while-loopen köras
+	Sleep(1000);
 	
+	tacho_set_position_sp (MOTOR_BOTH, 1000);
+	tacho_run_to_rel_pos(MOTOR_BOTH);
+	Sleep(1000);
+	
+	printf("något\n");
+	distance=sensor_get_value(0, us_sensor,0);
+	
+	if(distance<600){
+	printf("stopp!\n");
+	tacho_set_position_sp (MOTOR_BOTH, 0);
+	tacho_run_to_rel_pos(MOTOR_BOTH);
+	}
+	
+
 	
 	
 
