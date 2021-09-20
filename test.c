@@ -9,14 +9,14 @@
 #define MOTOR_C    		OUTC
 #define MOTOR_D    		OUTD
 #define SENSOR_TOUCH	IN1
-#define SENSOR_2		IN2
+#define SENSOR_US		IN2
 #define SENSOR_3		IN3
 #define SENSOR_4		IN4
 
 #define MOTOR_BOTH     	( MOTOR_LEFT | MOTOR_RIGHT ) /* Bitvis ELLER ger att båda motorerna styrs samtidigt */
 
 int max_hastighet;         /* variabel för max hastighet på motorn */
-POOL_T touchSensor;
+POOL_T touchSensor, us_sensor;
 
 int main( void )
 {  
@@ -39,20 +39,27 @@ int main( void )
 	touchSensor = sensor_search( LEGO_EV3_TOUCH ); // Registrerar en touch sensor på touchSensor-variabeln
 	touch_set_mode_touch(touchSensor); // anger vilken "mode" sensorn skall ha
 
-	tacho_set_speed_sp( MOTOR_BOTH, max_hastighet * 0.5 );  // Sätter hastigheten på båda motorerna till 50% av maxhastigheten
+	us_sensor=sensor_search( LEGO_EV3_US );
+	us_set_mode_us_dist_cm(us_sensor);
+	int distance=sensor_get_value(0, us_sensor,0);
+	printf("%d", distance);
+	
+
+	tacho_set_speed_sp( MOTOR_BOTH, max_hastighet * 0.1 );  // Sätter hastigheten på båda motorerna till 50% av maxhastigheten
 	/* Om man vill köra bakåt anger man negativ hastighet, till exempel max_hastighet * (-0.5) */
 	
-	printf("Full travel count:%d, Count per rotation:%d\n", tacho_get_full_travel_count(MOTOR_LEFT, 0), tacho_get_count_per_rot(MOTOR_LEFT, 0));
 	
-	tacho_set_position_sp (MOTOR_BOTH, 100);
+	printf("turning\n");
+	
+	tacho_set_position_sp (MOTOR_LEFT, 50);
+	tacho_set_position_sp (MOTOR_RIGHT, -50);
 	tacho_run_to_rel_pos (MOTOR_BOTH);
-	Sleep( 2000 );  
-	
-	printf("Full travel count:%d, Count per rotation:%d\n", tacho_get_full_travel_count(MOTOR_LEFT, 0), tacho_get_count_per_rot(MOTOR_LEFT, 0));
 
-	tacho_set_position_sp (MOTOR_BOTH, 1000);
-	tacho_run_to_rel_pos (MOTOR_BOTH);
-	Sleep( 2000 ); 
+	//tacho_set_position_sp (MOTOR_BOTH, 720);
+	//tacho_run_to_rel_pos (MOTOR_BOTH);
+	while(!sensor_get_value(0, touchSensor, 0)); //Så länge touch-sensorn inte är intryckt kommer while-loopen köras
+	
+	
 	
 
 	brick_uninit();
