@@ -64,7 +64,7 @@ int main( void )
 	int oversteer = turn_right(85, 5);
        	Sleep(400);
 
-	turn_right(-oversteer, 3);
+	turn_left(oversteer, 3);
 	Sleep(250);
 
 	tacho_set_speed_sp(MOTOR_BOTH, max_hastighet * 0.4);
