@@ -6,7 +6,7 @@
 
 #define MOTOR_RIGHT    	OUTA
 #define MOTOR_LEFT    	OUTB
-#define MOTOR_C    		OUTC
+#define MOTOR_GATE    	OUTC
 #define MOTOR_D    		OUTD
 #define SENSOR_TOUCH	IN1
 #define SENSOR_US		IN2
@@ -26,6 +26,7 @@ int turn_left(int degrees, int resolution);
 int turn_right(int degrees, int resultion);
 void find_wall();
 void angle_correction();
+void open_gate();
 
 int main( void )
 {  
@@ -90,6 +91,8 @@ int main( void )
 	tacho_run_to_rel_pos(MOTOR_BOTH);
 
 	Sleep(500);
+
+	open_gate;
 	
 	printf("Leave book!\n");
 
@@ -177,23 +180,37 @@ void gyro_reset()
 void find_wall()
 {
 	int distance = sensor_get_value(0, us_sensor,0);
+	Sleep(100);
 	int min_distance, min_dist_2nd;
 
 	while(distance > 900)
 	{
 		rotate(10, 80);
 		distance = sensor_get_value(0, us_sensor, 0);
+		Sleep(50);
 	}
 
+	
+	rotate(10, 80);
 	min_distance = distance;
-
-	do
+	distance = sensor_get_value(0, us_sensor, 0);
+	Sleep(50);
+	printf("distance:%d\n", distance);
+	rotate(10, 80);
+	min_dist_2nd = min_distance;
+	min_distance = distance;
+	distance = sensor_get_value(0, us_sensor, 0);
+	printf("distance:%d\nmin dist:% d2nd min dist:%d\n", distance, min_distance, min_dist_2nd);
+	Sleep(50);
+	
+	while(distance < min_distance && distance < min_dist_2nd)
 	{
-		rotate(10, 80);
+	rotate(10, 80);
 		min_dist_2nd = min_distance;
 		min_distance = distance;
 		distance = sensor_get_value(0, us_sensor, 0);
-	} while(distance < min_distance && distance < min_dist_2nd);
+		Sleep(50);
+	}
 }
 void angle_correction()
 {
@@ -210,9 +227,20 @@ void angle_correction()
 	min_dist_sec=min_dist;
 	min_dist=dist;
 	dist = sensor_get_value(0, us_sensor, 0);
-	if(dist>min_dist && dist>min_dist_sec)
+	if(dist>min_dist && dist>min_dist_sec &&dist>800)
 	{
 		turn_left(90,5);
 	}
 	Sleep(500);
+}
+
+void open_gate()
+{
+	tacho_set_speed_sp( MOTOR_GATE, max_hastighet * 0.3 );
+	tacho_set_position_sp(MOTOR_GATE, 100);
+	tacho_run_to_rel_pos(MOTOR_GATE);	
+	sleep(3000);
+	tacho_set_position_sp(MOTOR_GATE, -130);
+	tacho_run_to_rel_pos(MOTOR_GATE);
+	sleep(3000);
 }
