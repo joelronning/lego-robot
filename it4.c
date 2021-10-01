@@ -77,11 +77,30 @@ int main( void )
 	Sleep(2000);
 
 	tacho_set_speed_sp(MOTOR_BOTH, max_hastighet * 0.2);
-	turn_left(110, 5);
+	turn_left(100, 5);
+	int distance;
+	
+	distance = sensor_get_value(0, us_sensor, 0);
+	Sleep(300);
+	if(distance>800)
+	{
+		do
+		{
+			reverse(10, 70);
+			distance = sensor_get_value(0, us_sensor, 0);
+		} while(distance > 500);
+	}
+	else if(distance<300)
+	{
+		do
+		{
+			forward(10, 70);
+			distance = sensor_get_value(0, us_sensor, 0);
+		} while(distance < 500);
+	}
 	find_wall();
 	Sleep(800);
 
-	int distance;
 	do
 	{
 		reverse(10, 70);
