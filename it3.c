@@ -27,6 +27,7 @@ int turn_right(int degrees, int resultion);
 void find_wall();
 void angle_correction();
 void open_gate();
+void close_gate();
 
 int main( void )
 {  
@@ -92,7 +93,10 @@ int main( void )
 
 	Sleep(500);
 
-	open_gate;
+	open_gate();
+	Sleep(500);
+	
+	close_gate();
 	
 	printf("Leave book!\n");
 
@@ -183,7 +187,7 @@ void find_wall()
 	Sleep(100);
 	int min_distance, min_dist_2nd;
 
-	while(distance > 900)
+	while(distance > 700)
 	{
 		rotate(10, 80);
 		distance = sensor_get_value(0, us_sensor, 0);
@@ -240,7 +244,13 @@ void open_gate()
 	tacho_set_position_sp(MOTOR_GATE, 100);
 	tacho_run_to_rel_pos(MOTOR_GATE);	
 	sleep(3000);
-	tacho_set_position_sp(MOTOR_GATE, -130);
+	
+}
+
+void close_gate()
+{
+	tacho_set_speed_sp( MOTOR_GATE, max_hastighet * 0.3 );
+	tacho_set_position_sp(MOTOR_GATE, -150);
 	tacho_run_to_rel_pos(MOTOR_GATE);
 	sleep(3000);
 }
