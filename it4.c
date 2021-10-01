@@ -27,6 +27,9 @@ int turn_right(int degrees, int resultion);
 void find_wall();
 int open_gate();
 int close_gate();
+void angle_correction();
+
+
 int main( void )
 {  
 	
@@ -59,6 +62,9 @@ int main( void )
 	
 	Sleep(500);
 
+	angle_correction();
+	Sleep(500);
+	
 	find_wall();
 	Sleep(800);
 
@@ -201,7 +207,7 @@ void find_wall()
 	printf("distance:%d\nmin dist:% d2nd min dist:%d\n", distance, min_distance, min_dist_2nd);
 	Sleep(50);
 	
-	while(distance < min_distance && distance < min_dist_2nd)
+	while(distance < min_distance || distance < min_dist_2nd)
 	{
 	rotate(10, 80);
 		min_dist_2nd = min_distance;
@@ -211,6 +217,28 @@ void find_wall()
 	}
 
 	
+}
+
+void angle_correction()
+{
+	gyro_reset();
+	Sleep(1000);
+	int dist = sensor_get_value(0, us_sensor, 0);
+	int min_dist, min_dist_sec;
+	Sleep(100);
+	rotate(10, 80);
+	min_dist=dist;
+	dist = sensor_get_value(0, us_sensor, 0);
+	Sleep(100);
+	rotate(5, 80);
+	min_dist_sec=min_dist;
+	min_dist=dist;
+	dist = sensor_get_value(0, us_sensor, 0);
+	if(dist>min_dist || dist>min_dist_sec)
+	{
+		turn_left(90,5);
+	}
+	Sleep(500);
 }
 
 int open_gate()
