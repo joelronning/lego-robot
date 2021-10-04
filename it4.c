@@ -240,22 +240,25 @@ void find_wall()
 
 void angle_correction()
 {
+	int dist1, dist2, dist3;
 	gyro_reset();
 	Sleep(1000);
-	int dist = sensor_get_value(0, us_sensor, 0);
-	int min_dist, min_dist_sec;
-	Sleep(100);
-	rotate(10, 80);
-	min_dist=dist;
-	dist = sensor_get_value(0, us_sensor, 0);
-	Sleep(100);
+	
 	rotate(5, 80);
-	min_dist_sec=min_dist;
-	min_dist=dist;
-	dist = sensor_get_value(0, us_sensor, 0);
-	if(dist>min_dist || dist>min_dist_sec)
+	dist1 = sensor_get_value(0, us_sensor, 0);
+	Sleep(100);
+	
+	rotate(5, 80);
+	dist2 = sensor_get_value(0, us_sensor, 0);
+	Sleep(100);
+	
+	rotate(5, 80);
+	dist3 = sensor_get_value(0, us_sensor, 0);
+	Sleep(100);
+	
+	if(dist1 < dist2 || dist1 < dist3 || dist2 < dist3)
 	{
-		turn_left(90,5);
+		turn_left(90, 5);
 	}
 	Sleep(500);
 }
