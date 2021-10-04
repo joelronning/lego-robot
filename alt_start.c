@@ -48,31 +48,22 @@ int main( void )
 	Sleep(500);
 	
 	find_wall();
-	Sleep(500);
+	Sleep(800);
 
 	turn_left(85, 5);
        	Sleep(400);
 
 	tacho_set_speed_sp(MOTOR_BOTH, max_hastighet * 0.4);
-	forward(5050, 10000);
+	forward(5000, 10000);
 
 	Sleep(2000);
 
 	tacho_set_speed_sp(MOTOR_BOTH, max_hastighet * 0.2);
 	
-	turn_right(85, 5);
-	Sleep(400);
 	find_wall();
 	
 	distance_correction();
 	
-	int dist;
-	do
-	{
-		forward(10, 70);
-		dist = sensor_get_value(0, us_sensor, 0);
-	} while(dist > 400);
-
 	Sleep(800);
 	
 	printf("Leave book!\n");
@@ -228,7 +219,7 @@ void angle_correction()
 	
 	if(dist1 < dist2 || dist1 < dist3 || dist2 < dist3)
 	{
-		turn_left(90, 5);
+		turn_right(90, 5);
 	}
 	Sleep(500);
 }
