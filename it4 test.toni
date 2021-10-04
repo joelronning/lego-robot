@@ -18,6 +18,7 @@
 int max_hastighet;         /* variabel för max hastighet på motorn */
 POOL_T touchSensor, us_sensor, gyro_sensor;
 
+int initialize();
 void rotate(int degrees, int time);
 void forward(int degrees, int time);
 void reverse(int degrees, int time);
@@ -28,11 +29,62 @@ void find_wall();
 int open_gate();
 int close_gate();
 void angle_correction();
-int distance();
+void distance_correction();
+void find_wall_2();
 
 int main( void )
-{  
+{
+	if (! initialize())
+	{
+		return 0;
+	}
 	
+	tacho_set_speed_sp( MOTOR_BOTH, max_hastighet * 0.2 );  // Sätter hastigheten på båda motorerna till 50% av maxhastigheten
+	/* Om man vill köra bakåt anger man negativ hastighet, till exempel max_hastighet * (-0.5) */
+	
+	Sleep(500);
+
+	angle_correction();
+	Sleep(500);
+	
+	find_wall();
+	Sleep(800);
+
+	turn_left(85, 5);
+       	Sleep(400);
+
+	tacho_set_speed_sp(MOTOR_BOTH, max_hastighet * 0.4);
+	forward(5000, 10000);
+
+	Sleep(2000);
+
+	tacho_set_speed_sp(MOTOR_BOTH, max_hastighet * 0.2);
+	turn_left(90,5);
+	Sleep(400):;
+	
+	find_wall_2();
+	
+	int dist;
+	do
+	{
+		forward(10, 70);
+		dist = sensor_get_value(0, us_sensor, 0);
+	} while(dist > 400);
+	
+	Sleep(800);
+	
+	printf("Leave book!\n");
+	open_gate();
+	close_gate();
+
+	brick_uninit();
+	printf( "dying...\n" );
+    return ( 0 );
+
+}
+
+int initialize()
+{
 	if ( !brick_init()) return ( 1 ); /* Initialiserar EV3-klossen */
 	printf( "*** ( EV3 ) Hello! ***\n" );
 	Sleep( 2000 );
@@ -56,56 +108,7 @@ int main( void )
 
 	gyro_sensor = sensor_search(LEGO_EV3_GYRO);
 	gyro_set_mode_gyro_ang(gyro_sensor);
-
-	tacho_set_speed_sp( MOTOR_BOTH, max_hastighet * 0.2 );  // Sätter hastigheten på båda motorerna till 50% av maxhastigheten
-	/* Om man vill köra bakåt anger man negativ hastighet, till exempel max_hastighet * (-0.5) */
-	
-	Sleep(500);
-
-	angle_correction();
-	Sleep(500);
-	
-	find_wall();
-	Sleep(800);
-
-	turn_right(85, 5);
-       	Sleep(400);
-
-	tacho_set_speed_sp(MOTOR_BOTH, max_hastighet * 0.4);
-	reverse(4800, 10000);
-
-	Sleep(2000);
-
-	tacho_set_speed_sp(MOTOR_BOTH, max_hastighet * 0.2);
-	turn_left(100, 5);
-	
-  distance(); 
-  
-	find_wall();
-	Sleep(800);
-
-	do
-	{
-		reverse(10, 70);
-		distance = sensor_get_value(0, us_sensor, 0);
-	} while(distance > 400);
-
-	Sleep(400);
-
-	tacho_set_position_sp (MOTOR_BOTH, 0);
-	tacho_run_to_rel_pos(MOTOR_BOTH);
-
-	Sleep(500);
-	
-	printf("Leave book!\n");
-	open_gate();
-
-	brick_uninit();
-	printf( "dying...\n" );
-    return ( 0 );
-
 }
-
 
 void rotate(int degree, int time)
 {
@@ -117,7 +120,7 @@ void rotate(int degree, int time)
 
 void forward(int degree, int time)
 {
-	tacho_set_position_sp(MOTOR_BOTH, degree);
+	tacho_set_position_sp(MOTOR_BOTH, -degree);
 	tacho_run_to_rel_pos(MOTOR_BOTH);
 	Sleep(time);
 }
@@ -125,7 +128,7 @@ void forward(int degree, int time)
 
 void reverse(int degree, int time)
 {
-	tacho_set_position_sp(MOTOR_BOTH, -degree);
+	tacho_set_position_sp(MOTOR_BOTH, degree);
 	tacho_run_to_rel_pos(MOTOR_BOTH);
 	Sleep(time);
 }
@@ -181,63 +184,71 @@ void gyro_reset()
 	gyro_set_mode_gyro_ang(gyro_sensor);
 }
 
-
 void find_wall()
 {
 	int distance = sensor_get_value(0, us_sensor,0);
-	Sleep(100);
 	int min_distance, min_dist_2nd;
 
 	while(distance > 900)
 	{
-		rotate(10, 80);
+		rotate(10, 100);
 		distance = sensor_get_value(0, us_sensor, 0);
-		Sleep(50);
 	}
 
-	
-	rotate(10, 80);
 	min_distance = distance;
-	distance = sensor_get_value(0, us_sensor, 0);
-	Sleep(50);
-	printf("distance:%d\n", distance);
-	rotate(10, 80);
-	min_dist_2nd = min_distance;
-	min_distance = distance;
-	distance = sensor_get_value(0, us_sensor, 0);
-	printf("distance:%d\nmin dist:% d2nd min dist:%d\n", distance, min_distance, min_dist_2nd);
-	Sleep(50);
-	
-	while(distance < min_distance || distance < min_dist_2nd)
+
+	do
 	{
-	rotate(10, 80);
+		rotate(10, 100);
 		min_dist_2nd = min_distance;
 		min_distance = distance;
 		distance = sensor_get_value(0, us_sensor, 0);
-		Sleep(50);
+	} while(distance < min_distance && distance < min_dist_2nd);
+}
+
+void find_wall_2()
+{
+	int distance = sensor_get_value(0, us_sensor,0);
+	int min_distance, min_dist_2nd;
+
+	while(distance > 3500)
+	{
+		rotate(10, 100);
+		distance = sensor_get_value(0, us_sensor, 0);
 	}
 
-	
+	min_distance = distance;
+
+	do
+	{
+		rotate(10, 100);
+		min_dist_2nd = min_distance;
+		min_distance = distance;
+		distance = sensor_get_value(0, us_sensor, 0);
+	} while(distance < min_distance && distance < min_dist_2nd);
 }
 
 void angle_correction()
 {
+	int dist1, dist2, dist3;
 	gyro_reset();
 	Sleep(1000);
-	int dist = sensor_get_value(0, us_sensor, 0);
-	int min_dist, min_dist_sec;
-	Sleep(100);
-	rotate(10, 80);
-	min_dist=dist;
-	dist = sensor_get_value(0, us_sensor, 0);
-	Sleep(100);
+	
 	rotate(5, 80);
-	min_dist_sec=min_dist;
-	min_dist=dist;
-	dist = sensor_get_value(0, us_sensor, 0);
-	if(dist>min_dist || dist>min_dist_sec)
+	dist1 = sensor_get_value(0, us_sensor, 0);
+	Sleep(100);
+	
+	rotate(5, 80);
+	dist2 = sensor_get_value(0, us_sensor, 0);
+	Sleep(100);
+	
+	rotate(5, 80);
+	dist3 = sensor_get_value(0, us_sensor, 0);
+	Sleep(100);
+	
+	if(dist1 < dist2 || dist1 < dist3 || dist2 < dist3)
 	{
-		turn_left(90,5);
+		turn_right(90, 5);
 	}
 	Sleep(500);
 }
@@ -245,9 +256,9 @@ void angle_correction()
 int open_gate()
 {
 	tacho_set_speed_sp( MOTOR_GATE, max_hastighet * 0.3 );
-	tacho_set_position_sp(MOTOR_GATE, 200);
+	tacho_set_position_sp(MOTOR_GATE, 130);
 	tacho_run_to_rel_pos(MOTOR_GATE);	
-	sleep(1000);
+	Sleep(1500);
 	return 0;
 	
 }
@@ -255,30 +266,26 @@ int open_gate()
 int close_gate()
 {
 	tacho_set_speed_sp( MOTOR_GATE, max_hastighet * 0.3 );
-	tacho_set_position_sp(MOTOR_GATE, -250);
+	tacho_set_position_sp(MOTOR_GATE, -120);
 	tacho_run_to_rel_pos(MOTOR_GATE);
-	sleep(3000);
+	Sleep(2000);
 	return 0;
 }
 
-int distance();
-	{
-	distance = sensor_get_value(0, us_sensor, 0);
+
+void distance_correction()
+{
+	int dist;
+	
+	dist = sensor_get_value(0, us_sensor, 0);
 	Sleep(300);
-	if(distance>800)
+	if (dist > 800)
 	{
-		do
-		{
-			reverse(10, 70);
-			distance = sensor_get_value(0, us_sensor, 0);
-		} while(distance > 500);
+		forward(500, 400);
 	}
-	else if(distance<300)
+	else if (dist < 300)
 	{
-		do
-		{
-			forward(10, 70);
-			distance = sensor_get_value(0, us_sensor, 0);
-		} while(distance < 500);
-	    }
-  }
+		reverse(500, 400);
+	}
+}
+
