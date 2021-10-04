@@ -189,39 +189,20 @@ void gyro_reset()
 void find_wall()
 {
 	int distance = sensor_get_value(0, us_sensor,0);
-	Sleep(100);
 	int min_distance, min_dist_2nd;
-
 	while(distance > 900)
 	{
 		rotate(10, 80);
 		distance = sensor_get_value(0, us_sensor, 0);
-		Sleep(50);
 	}
 
-	
-	rotate(10, 80);
-	min_distance = distance;
-	distance = sensor_get_value(0, us_sensor, 0);
-	Sleep(50);
-	printf("distance:%d\n", distance);
-	rotate(10, 80);
-	min_dist_2nd = min_distance;
-	min_distance = distance;
-	distance = sensor_get_value(0, us_sensor, 0);
-	printf("distance:%d\nmin dist:% d2nd min dist:%d\n", distance, min_distance, min_dist_2nd);
-	Sleep(50);
-	
-	while(distance < min_distance || distance < min_dist_2nd)
+	do
 	{
-	rotate(10, 80);
+		rotate(10, 80);
 		min_dist_2nd = min_distance;
 		min_distance = distance;
 		distance = sensor_get_value(0, us_sensor, 0);
-		Sleep(50);
-	}
-
-	
+	} while(distance < min_distance && distance < min_dist_2nd);
 }
 
 void angle_correction()
