@@ -258,9 +258,9 @@ void angle_correction()
 int open_gate()
 {
 	tacho_set_speed_sp( MOTOR_GATE, max_hastighet * 0.3 );
-	tacho_set_position_sp(MOTOR_GATE, 100);
+	tacho_set_position_sp(MOTOR_GATE, 130);
 	tacho_run_to_rel_pos(MOTOR_GATE);	
-	sleep(1000);
+	Sleep(1500);
 	return 0;
 	
 }
@@ -270,7 +270,7 @@ int close_gate()
 	tacho_set_speed_sp( MOTOR_GATE, max_hastighet * 0.3 );
 	tacho_set_position_sp(MOTOR_GATE, -120);
 	tacho_run_to_rel_pos(MOTOR_GATE);
-	sleep(3000);
+	Sleep(2000);
 	return 0;
 }
 
