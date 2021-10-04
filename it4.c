@@ -18,6 +18,7 @@
 int max_hastighet;         /* variabel för max hastighet på motorn */
 POOL_T touchSensor, us_sensor, gyro_sensor;
 
+void initialize();
 void rotate(int degrees, int time);
 void forward(int degrees, int time);
 void reverse(int degrees, int time);
@@ -32,32 +33,7 @@ void distance();
 
 
 int main( void )
-{  
-	
-	if ( !brick_init()) return ( 1 ); /* Initialiserar EV3-klossen */
-	printf( "*** ( EV3 ) Hello! ***\n" );
-	Sleep( 2000 );
-	
-	if ( tacho_is_plugged( MOTOR_BOTH, TACHO_TYPE__NONE_ )) {  /* TACHO_TYPE__NONE_ = Alla typer av motorer */
-        max_hastighet = tacho_get_max_speed( MOTOR_LEFT, 0 );	/* Kollar maxhastigheten som motorn kan ha */
-        tacho_reset( MOTOR_BOTH );
-    } else {
-        printf( "Anslut vänster motor i port A,\n"
-        "Anslut höger motor i port B.\n"
-        );
-      	brick_uninit();
-        return ( 0 );  /* Stänger av sig om motorer ej är inkopplade */
-    }
-	
-	touchSensor = sensor_search( LEGO_EV3_TOUCH ); // Registrerar en touch sensor på touchSensor-variabeln
-	touch_set_mode_touch(touchSensor); // anger vilken "mode" sensorn skall ha
-
-	us_sensor=sensor_search( LEGO_EV3_US );
-	us_set_mode_us_dist_cm(us_sensor);
-
-	gyro_sensor = sensor_search(LEGO_EV3_GYRO);
-	gyro_set_mode_gyro_ang(gyro_sensor);
-
+{
 	tacho_set_speed_sp( MOTOR_BOTH, max_hastighet * 0.2 );  // Sätter hastigheten på båda motorerna till 50% av maxhastigheten
 	/* Om man vill köra bakåt anger man negativ hastighet, till exempel max_hastighet * (-0.5) */
 	
@@ -106,6 +82,32 @@ int main( void )
 
 }
 
+void initialize()
+{
+	if ( !brick_init()) return ( 1 ); /* Initialiserar EV3-klossen */
+	printf( "*** ( EV3 ) Hello! ***\n" );
+	Sleep( 2000 );
+	
+	if ( tacho_is_plugged( MOTOR_BOTH, TACHO_TYPE__NONE_ )) {  /* TACHO_TYPE__NONE_ = Alla typer av motorer */
+        max_hastighet = tacho_get_max_speed( MOTOR_LEFT, 0 );	/* Kollar maxhastigheten som motorn kan ha */
+        tacho_reset( MOTOR_BOTH );
+    } else {
+        printf( "Anslut vänster motor i port A,\n"
+        "Anslut höger motor i port B.\n"
+        );
+      	brick_uninit();
+        return ( 0 );  /* Stänger av sig om motorer ej är inkopplade */
+    }
+	
+	touchSensor = sensor_search( LEGO_EV3_TOUCH ); // Registrerar en touch sensor på touchSensor-variabeln
+	touch_set_mode_touch(touchSensor); // anger vilken "mode" sensorn skall ha
+
+	us_sensor=sensor_search( LEGO_EV3_US );
+	us_set_mode_us_dist_cm(us_sensor);
+
+	gyro_sensor = sensor_search(LEGO_EV3_GYRO);
+	gyro_set_mode_gyro_ang(gyro_sensor);
+}
 
 void rotate(int degree, int time)
 {
@@ -270,20 +272,12 @@ void distance()
 	
 	distance = sensor_get_value(0, us_sensor, 0);
 	Sleep(300);
-	if(distance>800)
+	if (distance>800)
 	{
-		do
-		{
-			forward(10, 70);
-			distance = sensor_get_value(0, us_sensor, 0);
-		} while(distance > 500);
+		forward(500, 400);
 	}
-	else if(distance<300)
+	else if (distance<300)
 	{
-		do
-		{
-			reverse(10, 70);
-			distance = sensor_get_value(0, us_sensor, 0);
-		} while(distance < 500);
+		reverse(500, 400);
 	}
 }
