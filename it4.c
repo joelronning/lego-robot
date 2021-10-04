@@ -28,6 +28,7 @@ void find_wall();
 int open_gate();
 int close_gate();
 void angle_correction();
+void distance();
 
 
 int main( void )
@@ -78,26 +79,7 @@ int main( void )
 
 	tacho_set_speed_sp(MOTOR_BOTH, max_hastighet * 0.2);
 	turn_left(100, 5);
-	int distance;
 	
-	distance = sensor_get_value(0, us_sensor, 0);
-	Sleep(300);
-	if(distance>800)
-	{
-		do
-		{
-			forward(10, 70);
-			distance = sensor_get_value(0, us_sensor, 0);
-		} while(distance > 500);
-	}
-	else if(distance<300)
-	{
-		do
-		{
-			reverse(10, 70);
-			distance = sensor_get_value(0, us_sensor, 0);
-		} while(distance < 500);
-	}
 	find_wall();
 	Sleep(800);
 
@@ -280,4 +262,28 @@ int close_gate()
 	tacho_run_to_rel_pos(MOTOR_GATE);
 	sleep(3000);
 	return 0;
+}
+
+void distance()
+{
+	int distance;
+	
+	distance = sensor_get_value(0, us_sensor, 0);
+	Sleep(300);
+	if(distance>800)
+	{
+		do
+		{
+			forward(10, 70);
+			distance = sensor_get_value(0, us_sensor, 0);
+		} while(distance > 500);
+	}
+	else if(distance<300)
+	{
+		do
+		{
+			reverse(10, 70);
+			distance = sensor_get_value(0, us_sensor, 0);
+		} while(distance < 500);
+	}
 }
