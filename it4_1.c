@@ -29,7 +29,7 @@ void find_wall();
 int open_gate();
 int close_gate();
 void angle_correction();
-void distance();
+void distance_correction();
 
 
 int main( void )
@@ -61,7 +61,7 @@ int main( void )
 	tacho_set_speed_sp(MOTOR_BOTH, max_hastighet * 0.2);
 	turn_left(100, 5);
 	
-	distance();
+	distance_correction();
 	
 	find_wall();
 	Sleep(800);
@@ -274,7 +274,7 @@ int close_gate()
 	return 0;
 }
 
-void distance()
+void distance_correction()
 {
 	int dist;
 	
