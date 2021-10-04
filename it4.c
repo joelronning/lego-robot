@@ -72,7 +72,7 @@ int main( void )
        	Sleep(400);
 
 	tacho_set_speed_sp(MOTOR_BOTH, max_hastighet * 0.4);
-	reverse(4800, 10000);
+	forward(4800, 10000);
 
 	Sleep(2000);
 
@@ -86,7 +86,7 @@ int main( void )
 	{
 		do
 		{
-			reverse(10, 70);
+			forward(10, 70);
 			distance = sensor_get_value(0, us_sensor, 0);
 		} while(distance > 500);
 	}
@@ -94,7 +94,7 @@ int main( void )
 	{
 		do
 		{
-			forward(10, 70);
+			reverse(10, 70);
 			distance = sensor_get_value(0, us_sensor, 0);
 		} while(distance < 500);
 	}
@@ -103,7 +103,7 @@ int main( void )
 
 	do
 	{
-		reverse(10, 70);
+		forward(10, 70);
 		distance = sensor_get_value(0, us_sensor, 0);
 	} while(distance > 400);
 
@@ -135,7 +135,7 @@ void rotate(int degree, int time)
 
 void forward(int degree, int time)
 {
-	tacho_set_position_sp(MOTOR_BOTH, degree);
+	tacho_set_position_sp(MOTOR_BOTH, -degree);
 	tacho_run_to_rel_pos(MOTOR_BOTH);
 	Sleep(time);
 }
@@ -143,7 +143,7 @@ void forward(int degree, int time)
 
 void reverse(int degree, int time)
 {
-	tacho_set_position_sp(MOTOR_BOTH, -degree);
+	tacho_set_position_sp(MOTOR_BOTH, degree);
 	tacho_run_to_rel_pos(MOTOR_BOTH);
 	Sleep(time);
 }
