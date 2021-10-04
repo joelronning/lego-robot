@@ -56,6 +56,8 @@ int main( void )
 	tacho_set_speed_sp(MOTOR_BOTH, max_hastighet * 0.2);
 	turn_left(100, 5);
 	
+	distance();
+	
 	find_wall();
 	Sleep(800);
 
