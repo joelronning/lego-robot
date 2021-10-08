@@ -62,6 +62,7 @@ int main( void )
 
 	turn_right(88, 5);
 	Sleep(400);
+
 	find_wall();
 		
 	turn_left(180,5);
@@ -154,7 +155,6 @@ int turn_left(int degrees, int resolution)
 	{
 		rotate(-resolution, 50);
 		angle = sensor_get_value(0, gyro_sensor, 0);
-		printf("angle: %d", angle);
 	}
 
 	Sleep(100);
@@ -197,7 +197,7 @@ void find_wall()
 {
 	int distance = sensor_get_value(0, us_sensor,0);
 	int min_distance, min_dist_2nd;
-
+	
 	while(distance > 900)
 	{
 		rotate(10, 100);
@@ -239,7 +239,16 @@ void find_wall_2()
 
 void angle_correction()
 {
-	int dist1, dist2, dist3;
+	int distance_1= sensor_get_value(0, us_sensor, 0);
+	turn_right(5,5);
+	distance_1= sensor_get_value(0, us_sensor, 0);
+	
+	if(distance_1 < 900)
+	{
+		turn_left(180, 5);
+	}
+	
+	/*int dist1, dist2, dist3;
 	gyro_reset();
 	Sleep(1000);
 	
@@ -258,14 +267,13 @@ void angle_correction()
 	if(dist1 < dist2 || dist1 < dist3 || dist2 < dist3)
 	{
 		turn_right(90, 5);
-	}
-	Sleep(500);
+	}*/
 }
 
 int open_gate()
 {
 	tacho_set_speed_sp( MOTOR_GATE, max_hastighet * 0.3 );
-	tacho_set_position_sp(MOTOR_GATE, 130);
+	tacho_set_position_sp(MOTOR_GATE, 160);
 	tacho_run_to_rel_pos(MOTOR_GATE);	
 	Sleep(1500);
 	return 0;
@@ -275,7 +283,7 @@ int open_gate()
 int close_gate()
 {
 	tacho_set_speed_sp( MOTOR_GATE, max_hastighet * 0.3 );
-	tacho_set_position_sp(MOTOR_GATE, -120);
+	tacho_set_position_sp(MOTOR_GATE, -150);
 	tacho_run_to_rel_pos(MOTOR_GATE);
 	Sleep(2000);
 	return 0;
