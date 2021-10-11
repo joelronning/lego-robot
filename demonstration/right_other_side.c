@@ -64,6 +64,14 @@ int main( void )
 	Sleep(400);
 
 	find_wall();
+		
+	turn_left(172,5);
+	Sleep(400);
+	
+	tacho_set_speed_sp(MOTOR_BOTH, max_hastighet * 0.3);
+
+
+	forward(2000, 8000);
 
 	int dist;
 	do
